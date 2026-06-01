@@ -98,8 +98,11 @@ LINUX_RELEASE=$1
 mkdir -p /etc/nginx/
 echo ${LINUX_RELEASE} > /etc/nginx/linux_release
 
-# Add admin group and user
-id admin || groupadd -f admin && useradd -m -g admin admin || adduser -D -g admin admin
+# Add admin group and user (skip if already present in the base image)
+if ! id admin >/dev/null 2>&1; then
+    groupadd -f admin
+    useradd -m -g admin admin || adduser -D -G admin admin
+fi
 
 # Install dependencies
 if [[ $LINUX_RELEASE =~ "anolisos" ]]

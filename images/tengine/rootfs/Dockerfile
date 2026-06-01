@@ -38,7 +38,10 @@ COPY --from=builder /opt /opt
 COPY --from=builder /etc/nginx /etc/nginx
 COPY --from=builder /usr/bin/dumb-init /usr/bin/
 
-RUN id admin || groupadd -f admin && useradd -m -g admin admin || adduser -D -g admin admin
+RUN if ! id admin >/dev/null 2>&1; then \
+        groupadd -f admin && \
+        (useradd -m -g admin admin || adduser -D -G admin admin); \
+    fi
 
 RUN rm -rf /usr/local/nginx/sbin/nginx && chown root:admin /usr/local/tengine/sbin/tengine && chmod 6755 /usr/local/tengine/sbin/tengine
 
