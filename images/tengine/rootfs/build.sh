@@ -111,6 +111,13 @@ then
     yum install -y cmake gcc curl-devel clang llvm kernel-headers autoconf automake libtool gcc-c++ pcre-devel git unzip epel-release
     yum install -y GeoIP GeoIP-devel dumb-init
     yum install -y libnl3-devel elfutils-libelf-devel libcap-devel
+    # Ensure cmake >= 3.x; fall back to cmake3 from EPEL when the default is too old
+    cmake_version=$(cmake --version 2>/dev/null | awk 'NR==1{print $3}')
+    if [[ -z "$cmake_version" || "${cmake_version%%.*}" -lt 3 ]]; then
+        yum install -y cmake3
+        ln -sf "$(command -v cmake3)" /usr/local/bin/cmake
+        hash -r
+    fi
     WITH_XUDP="1"
 elif [[ $LINUX_RELEASE =~ "alpine" ]]
 then
