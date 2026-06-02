@@ -6,8 +6,8 @@ set -o pipefail
 
 export DEBIAN_FRONTEND=noninteractive
 
-export TENGINE_VERSION=3.1.0
-export XQUIC_VERSION=1.6.0
+export TENGINE_VERSION=3.2.0
+export XQUIC_VERSION=1.9.3
 export XUDP_LIB_VERSION=1.0.2
 export BABASSL_VERSION=8.3.2
 export NDK_VERSION=0.3.1rc1
