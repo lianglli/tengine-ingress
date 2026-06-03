@@ -111,11 +111,20 @@ then
     yum install -y cmake gcc curl-devel clang llvm kernel-headers autoconf automake libtool gcc-c++ pcre-devel git unzip epel-release
     yum install -y GeoIP GeoIP-devel dumb-init
     yum install -y libnl3-devel elfutils-libelf-devel libcap-devel
-    # Ensure cmake >= 3.x; fall back to cmake3 from EPEL when the default is too old
+    # Ensure cmake >= 3.x; install official prebuilt binary when the default is too old
     cmake_version=$(cmake --version 2>/dev/null | awk 'NR==1{print $3}')
     if [[ -z "$cmake_version" || "${cmake_version%%.*}" -lt 3 ]]; then
-        yum install -y cmake3
-        ln -sf "$(command -v cmake3)" /usr/local/bin/cmake
+        CMAKE_BIN_VERSION=3.25.3
+        case "$ARCH" in
+            x86_64)  cmake_arch=linux-x86_64 ;;
+            aarch64) cmake_arch=linux-aarch64 ;;
+            *) echo "Unsupported arch for cmake binary: $ARCH"; exit 1 ;;
+        esac
+        cmake_pkg="cmake-${CMAKE_BIN_VERSION}-${cmake_arch}.tar.gz"
+        curl -fsSL -o "/tmp/${cmake_pkg}" \
+            "https://github.com/Kitware/CMake/releases/download/v${CMAKE_BIN_VERSION}/${cmake_pkg}"
+        tar -xzf "/tmp/${cmake_pkg}" -C /usr/local --strip-components=1
+        rm -f "/tmp/${cmake_pkg}"
         hash -r
     fi
     WITH_XUDP="1"
